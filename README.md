@@ -8,6 +8,8 @@ Planish helps students track, manage, and beat their deadlines—with zero overw
 ## 🚀 Features
 
  - Sleek and Modern Design using 3D elements and Scroll Animations
+ - Responsive and Supports All Screen Sizes.
+ - Secure and Robust Backend using Next.js routes and Firebase (auth/firestore)
  - All-in-One Planner: Tasks, deadlines, and events in one clean
    dashboard.
  - AI-Powered Task Breakdown: Split big tasks into small, actionable
