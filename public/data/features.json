@@ -1,13 +1,13 @@
 [
   {
-    "iconName": "Folder",
+    "iconName": "Calendar",
     "title": "Organize Everything",
-    "description": "Create your semester, classes, assignments, and deadlines in one place.\nPlanish keeps it clean so you never lose track."
+    "description": "Planish helps you keep track of all your tasks, deadlines, and events in one place.\nPlan your day, week, and month with ease."
   },
   {
-    "iconName": "Bell",
-    "title": "Get Smart Reminders",
-    "description": "We nudge you before things get urgent.\nSkip the all-nighters. Start early — even if it's just a little."
+    "iconName": "Sparkles",
+    "title": "Get Ai Suggestions",
+    "description": "Split your tasks into smaller steps with AI.\nPlanish helps you break down big projects into manageable pieces."
   },
   {
     "iconName": "CheckCircle2",
