@@ -1,0 +1,22 @@
+[
+  {
+    "iconName": "Folder",
+    "title": "Organize Everything",
+    "description": "Create your semester, classes, assignments, and deadlines in one place.\nPlanish keeps it clean so you never lose track."
+  },
+  {
+    "iconName": "Bell",
+    "title": "Get Smart Reminders",
+    "description": "We nudge you before things get urgent.\nSkip the all-nighters. Start early — even if it's just a little."
+  },
+  {
+    "iconName": "CheckCircle2",
+    "title": "Track Progress Visually",
+    "description": "See what's done, what's coming up, and what's overdue — at a glance.\nNo more guessing or digging through files."
+  },
+  {
+    "iconName": "Lightbulb",
+    "title": "Study Without the Stress",
+    "description": "Planish breaks big tasks into smaller wins.\nYou focus on doing — not figuring out what to do."
+  }
+]

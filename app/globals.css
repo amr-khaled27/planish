@@ -1,0 +1,162 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+}
+
+:root {
+  --foreground-rgb: 255, 255, 255;
+  --background-start-rgb: 17, 24, 39;
+  --background-end-rgb: 31, 41, 55;
+}
+
+*:focus:not(ol) {
+  @apply outline-none ring-2 ring-accent border-accent;
+}
+
+select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  text-indent: 1px;
+  text-overflow: "";
+}
+
+@layer base {
+  :root {
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 84% 4.9%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 132 66% 50%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+    --radius: 0.5rem;
+
+    --timer-work-bg: 0 75% 19%;
+    --timer-work-text: 0 60% 80%;
+    --timer-break-bg: 142 45% 25%;
+    --timer-break-text: 142 50% 75%;
+    --timer-pause: 45 93% 58%;
+    --timer-pause-hover: 45 93% 50%;
+    --timer-card-bg: 215 28% 17%;
+    --timer-card-border: 215 28% 27%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground min-h-screen;
+    background: linear-gradient(
+      135deg,
+      hsl(var(--background)),
+      hsl(var(--secondary))
+    );
+  }
+}
+
+@layer utilities {
+  .fade-in {
+    animation: fadeIn 0.6s ease-in-out;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Custom Schedule-X Dark Theme Overrides */
+  .calendar-container .sx__calendar-wrapper {
+    background-color: transparent;
+    border-radius: 0.5rem;
+  }
+
+  .calendar-container .sx__calendar-wrapper.is-dark {
+    background-color: hsl(var(--secondary) / 0.5);
+    border: 1px solid hsl(var(--border) / 0.3);
+  }
+
+  /* Improve calendar header styling in dark mode */
+  .calendar-container .is-dark .sx__calendar-header {
+    background-color: hsl(var(--background));
+    border-bottom: 1px solid hsl(var(--border) / 0.3);
+  }
+
+  /* Enhance calendar grid styling */
+  .calendar-container .is-dark .sx__week-grid,
+  .calendar-container .is-dark .sx__month-grid {
+    background-color: hsl(var(--secondary) / 0.8);
+  }
+
+  /* Improve text readability in dark mode */
+  .calendar-container .is-dark {
+    --sx-internal-color-text: hsl(var(--foreground));
+    --sx-color-on-surface: hsl(var(--foreground));
+  }
+
+  /* Custom event colors for better contrast in dark mode */
+  .calendar-container .is-dark .sx__event {
+    border-width: 1px;
+    border-style: solid;
+  }
+
+  /* Enhance time grid appearance */
+  .calendar-container .is-dark .sx__time-grid__time {
+    color: hsl(var(--muted-foreground));
+    border-color: hsl(var(--border) / 0.3);
+  }
+
+  /* Improve today highlighting */
+  .calendar-container .is-dark .sx__week-grid__day--is-today,
+  .calendar-container .is-dark .sx__month-grid__day--is-today {
+    background-color: hsl(var(--accent) / 0.1);
+    border-color: hsl(var(--accent) / 0.3);
+  }
+
+  /* Custom scrollbar for calendar in dark mode */
+  .calendar-container .is-dark ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .calendar-container .is-dark ::-webkit-scrollbar-track {
+    background: hsl(var(--secondary));
+  }
+
+  .calendar-container .is-dark ::-webkit-scrollbar-thumb {
+    background: hsl(var(--border));
+    border-radius: 4px;
+  }
+
+  .calendar-container .is-dark ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground));
+  }
+}
