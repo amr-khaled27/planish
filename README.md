@@ -11,6 +11,7 @@ Planish helps students track, manage, and beat their deadlines—with zero overw
    dashboard.
  - AI-Powered Task Breakdown: Split big tasks into small, actionable
    steps.
+ - Do study sessions using an integrated Pmodoro Timer
  - Visual Progress Tracker: Instantly see what’s done, upcoming, or
    overdue.
  - Stress-Free Study Flow: No more guessing what to do next—just start doing.
