@@ -7,6 +7,7 @@ Planish helps students track, manage, and beat their deadlines—with zero overw
 
 ## 🚀 Features
 
+ - Sleek and Modern Design using 3D elements and Scroll Animations
  - All-in-One Planner: Tasks, deadlines, and events in one clean
    dashboard.
  - AI-Powered Task Breakdown: Split big tasks into small, actionable
