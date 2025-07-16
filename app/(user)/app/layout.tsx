@@ -103,7 +103,6 @@ function GlobalModals() {
   } = useModal();
   const { addNewTask, updateExistingTask, tasks } = useTasks();
 
-  // Get current task from tasks array using the ID
   const currentTask = currentTaskId
     ? tasks.find((task) => task.id === currentTaskId)
     : null;
@@ -179,12 +178,10 @@ export default function AppLayout({ children }: { children: ReactNode }) {
 
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
 
-  // Close sidebar when route changes (mobile navigation)
   useEffect(() => {
     setSidebarOpen(false);
   }, [pathname]);
 
-  // Close sidebar when clicking outside on mobile
   const handleOverlayClick = () => {
     setSidebarOpen(false);
   };
@@ -198,7 +195,6 @@ export default function AppLayout({ children }: { children: ReactNode }) {
         >
           <SearchContext.Provider value={{ searchTerm, setSearchTerm }}>
             <section className="flex min-h-screen relative">
-              {/* Mobile Overlay */}
               <AnimatePresence>
                 {sidebarOpen && (
                   <motion.div
@@ -211,7 +207,6 @@ export default function AppLayout({ children }: { children: ReactNode }) {
                 )}
               </AnimatePresence>
 
-              {/* Sidebar */}
               <div
                 className={`
                 fixed lg:static inset-y-0 left-0 z-50 w-64
@@ -224,7 +219,6 @@ export default function AppLayout({ children }: { children: ReactNode }) {
               `}
               >
                 <AppSidebar />
-                {/* Close button for mobile */}
                 <button
                   onClick={toggleSidebar}
                   className="absolute top-4 right-4 lg:hidden text-white hover:text-accent transition-colors"

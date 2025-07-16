@@ -1,7 +1,6 @@
 "use client";
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
-import { LoadingSpinner } from "./LoadingSpinner";
 import { useState } from "react";
 
 interface CTAButtonProps {

@@ -143,7 +143,6 @@ export default function App() {
             </motion.div>
           )}
 
-          {/* Load More Button */}
           {!isFetchingTasks && !searchTerm && hasMore && (
             <motion.div
               className="flex justify-center mt-8"

@@ -46,7 +46,7 @@ export default function AppSidebar() {
             <button
               onClick={() => router.push("/app/study")}
               className={`hover:text-accent transition-colors cursor-pointer text-left w-full p-2 rounded ${
-                isActive("/app/study") ? "bg-accent" : ""
+                isActive("/app/study") ? "bg-accent hover:text-white" : ""
               }`}
             >
               Study
@@ -56,7 +56,7 @@ export default function AppSidebar() {
             <button
               onClick={() => router.push("/app/ai")}
               className={`hover:text-accent transition-colors cursor-pointer text-left w-full p-2 rounded ${
-                isActive("/app/ai") ? "bg-accent" : ""
+                isActive("/app/ai") ? "bg-accent hover:text-white" : ""
               }`}
             >
               AI Planner
