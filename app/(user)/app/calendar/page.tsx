@@ -10,7 +10,7 @@ import { createEventsServicePlugin } from "@schedule-x/events-service";
 import { createDragAndDropPlugin } from "@schedule-x/drag-and-drop";
 import { createResizePlugin } from "@schedule-x/resize";
 import { createCurrentTimePlugin } from "@schedule-x/current-time";
-import { useEffect, useState, useCallback, useMemo } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useTasks } from "@/context/TasksContext";
 import { useModal } from "@/context/ModalContext";
@@ -126,19 +126,10 @@ export default function CalendarPage() {
     })
   );
 
-  // Create a unique key that changes whenever events change to force re-render
-  const calendarKey = useMemo(() => {
-    const eventCount = tasks.filter((t) => t.dueDate).length;
-    const taskIds = tasks
-      .map((t) => t.id)
-      .sort()
-      .join("-");
-    return `calendar-${eventCount}-${taskIds.slice(0, 50)}`; // Truncate to avoid excessive key length
-  }, [tasks]);
-
+  // Initialize calendar with empty events array - we'll populate via events service
   const calendar = useCalendarApp({
     views: [createViewDay(), createViewWeek(), createViewMonthGrid()],
-    events: [],
+    events: [], // Always start with empty array
     plugins: [
       eventsService,
       dragAndDropPlugin,
@@ -160,36 +151,23 @@ export default function CalendarPage() {
   }, [user]);
 
   useEffect(() => {
-    if (isReady) {
+    if (isReady && tasks.length >= 0) {
       const events = convertTasksToEvents(tasks);
-      console.log("Calendar Debug - Setting events:", {
-        totalTasks: tasks.length,
-        tasksWithDates: tasks.filter((t) => t.dueDate).length,
-        events: events.map((e) => ({
-          id: e.id,
-          title: e.title,
-          start: e.start,
-          end: e.end,
-        })),
+
+      console.log("Calendar: Syncing events", {
+        taskCount: tasks.length,
+        eventCount: events.length,
+        taskIds: tasks.map((t) => t.id).slice(0, 5),
       });
 
-      // Simple direct approach - just set the events
       eventsService.set(events);
     }
   }, [tasks, eventsService, isReady]);
-
-  // Clear events when component unmounts or user changes
   useEffect(() => {
     return () => {
       eventsService.set([]);
     };
-  }, [eventsService, user]);
-
-  // Force calendar re-render when events change significantly
-  useEffect(() => {
-    // Clear events on every render to prevent stale state
-    eventsService.set([]);
-  }, [calendarKey, eventsService]);
+  }, [eventsService]);
 
   if (loading || isLoading || !isReady) {
     return <LoadingSpinner />;
@@ -209,12 +187,7 @@ export default function CalendarPage() {
           className="sx-react-calendar-wrapper"
           style={{ backgroundColor: "transparent" }}
         >
-          <ScheduleXCalendar
-            calendarApp={calendar}
-            key={`calendar-${tasks.length}-${
-              tasks.filter((t) => t.dueDate).length
-            }`}
-          />
+          <ScheduleXCalendar calendarApp={calendar} />
         </div>
       </div>
     </div>
