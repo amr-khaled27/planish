@@ -39,46 +39,94 @@ export function getPriorityColor(priority: string): string {
 }
 
 export function convertTasksToEvents(tasks: Task[]): CalendarEvent[] {
-  return tasks
-    .filter((task) => task.dueDate)
-    .map((task) => {
-      const startDate = task.dueDate!;
-      let startDateTime = startDate;
-      let endDateTime = startDate;
+  const validTasks = tasks.filter((task) => task.dueDate);
 
-      if (task.type === "deadline") {
-        // For deadline tasks, always show as all-day events
-        startDateTime = startDate;
-        endDateTime = startDate;
-      } else {
-        // For other tasks, use startTime and dueTime
-        if (task.startTime && task.dueTime) {
-          startDateTime = `${startDate} ${task.startTime}`;
-          endDateTime = `${startDate} ${task.dueTime}`;
-        } else if (task.startTime) {
-          // If only startTime is set, default to 2-hour duration
-          startDateTime = `${startDate} ${task.startTime}`;
-          const endTime = new Date(`${startDate}T${task.startTime}`);
-          endTime.setHours(endTime.getHours() + 2);
-          endDateTime = `${startDate} ${endTime.toTimeString().slice(0, 5)}`;
-        } else if (task.dueTime) {
-          // If only dueTime is set, show as 1-hour block ending at dueTime
-          const startTime = new Date(`${startDate}T${task.dueTime}`);
-          startTime.setHours(startTime.getHours() - 1);
-          startDateTime = `${startDate} ${startTime
-            .toTimeString()
-            .slice(0, 5)}`;
-          endDateTime = `${startDate} ${task.dueTime}`;
-        }
-      }
+  console.log(
+    "Total tasks:",
+    tasks.length,
+    "Tasks with dates:",
+    validTasks.length
+  );
 
-      return {
-        id: task.id,
-        title: task.title,
-        start: startDateTime,
-        end: endDateTime,
-        description: task.description,
-        color: getPriorityColor(task.priority),
-      };
+  const taskIds = validTasks.map((t) => t.id);
+  const duplicateIds = taskIds.filter(
+    (id, index) => taskIds.indexOf(id) !== index
+  );
+  if (duplicateIds.length > 0) {
+    console.warn("Duplicate task IDs found:", duplicateIds);
+  }
+
+  const events = validTasks.map((task) => {
+    const startDate = task.dueDate!;
+    let startDateTime = startDate;
+    let endDateTime = startDate;
+
+    console.log("Converting task to event:", {
+      id: task.id,
+      title: task.title,
+      originalDueDate: task.dueDate,
+      type: task.type,
+      startTime: task.startTime,
+      dueTime: task.dueTime,
     });
+
+    const date = new Date(startDate + "T12:00:00");
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    const isoDate = `${year}-${month}-${day}`;
+
+    if (task.type === "deadline") {
+      // For deadline tasks, always show as all-day events
+      // Use consistent ISO date format
+      startDateTime = isoDate;
+      endDateTime = isoDate;
+    } else {
+      // For other tasks, use startTime and dueTime
+      if (task.startTime && task.dueTime) {
+        startDateTime = `${isoDate} ${task.startTime}`;
+        endDateTime = `${isoDate} ${task.dueTime}`;
+      } else if (task.startTime) {
+        // If only startTime is set, default to 2-hour duration
+        startDateTime = `${isoDate} ${task.startTime}`;
+        const endTime = new Date(`${isoDate}T${task.startTime}`);
+        endTime.setHours(endTime.getHours() + 2);
+        endDateTime = `${isoDate} ${endTime.toTimeString().slice(0, 5)}`;
+      } else if (task.dueTime) {
+        // If only dueTime is set, show as 1-hour block ending at dueTime
+        const startTime = new Date(`${isoDate}T${task.dueTime}`);
+        startTime.setHours(startTime.getHours() - 1);
+        startDateTime = `${isoDate} ${startTime.toTimeString().slice(0, 5)}`;
+        endDateTime = `${isoDate} ${task.dueTime}`;
+      } else {
+        // Default to all-day if no times specified
+        startDateTime = isoDate;
+        endDateTime = isoDate;
+      }
+    }
+
+    const event = {
+      id: task.id,
+      title: task.title,
+      start: startDateTime,
+      end: endDateTime,
+      description: task.description,
+      color: getPriorityColor(task.priority),
+    };
+
+    console.log("Generated event:", event);
+    return event;
+  });
+
+  // Check for duplicate event IDs
+  const eventIds = events.map((e) => e.id);
+  const duplicateEventIds = eventIds.filter(
+    (id, index) => eventIds.indexOf(id) !== index
+  );
+  if (duplicateEventIds.length > 0) {
+    console.warn("Duplicate event IDs found:", duplicateEventIds);
+  }
+
+  console.log("Final events array:", events);
+  return events;
 }

@@ -42,7 +42,15 @@ export function useTasks() {
       setIsLoadingMore(true);
       const nextPage = currentPage + 1;
       const result = await getTasksPaginated(user.uid, 10, nextPage);
-      setTasks((currentTasks) => [...currentTasks, ...result.tasks]);
+
+      setTasks((currentTasks) => {
+        const existingIds = new Set(currentTasks.map((task) => task.id));
+        const newTasks = result.tasks.filter(
+          (task) => !existingIds.has(task.id)
+        );
+        return [...currentTasks, ...newTasks];
+      });
+
       setCurrentPage(nextPage);
       setHasMore(result.hasMore);
     } catch (error) {

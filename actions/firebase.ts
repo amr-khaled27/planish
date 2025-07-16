@@ -14,11 +14,7 @@ const db = getFirestore(app);
 
 export async function getAllTasks(uid: string): Promise<Task[]> {
   const tasksCol = collection(db, "tasks");
-  const q = query(
-    tasksCol,
-    where("uid", "==", uid),
-    limit(10)
-  );
+  const q = query(tasksCol, where("uid", "==", uid), limit(10));
   const snapshot = await getDocs(q);
 
   const tasks = snapshot.docs.map((doc) => {
@@ -28,8 +24,9 @@ export async function getAllTasks(uid: string): Promise<Task[]> {
     } as Task;
   });
 
-  // Sort by createdAt on client side
-  return tasks.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  return tasks.sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  );
 }
 
 export async function getTasksPaginated(
@@ -42,15 +39,10 @@ export async function getTasksPaginated(
   totalFetched: number;
 }> {
   const tasksCol = collection(db, "tasks");
-  
-  // Fetch more documents than needed to check for more pages
-  const fetchSize = (page + 1) * pageSize + 1;
-  
-  const q = query(
-    tasksCol,
-    where("uid", "==", uid),
-    limit(fetchSize)
-  );
+
+  const totalToFetch = Math.min(1000, (page + 1) * pageSize + 1);
+
+  const q = query(tasksCol, where("uid", "==", uid), limit(totalToFetch));
 
   const snapshot = await getDocs(q);
   const allTasks = snapshot.docs.map(
@@ -61,10 +53,10 @@ export async function getTasksPaginated(
       } as Task)
   );
 
-  // Sort by createdAt on client side
-  const sortedTasks = allTasks.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-  
-  // Calculate pagination
+  const sortedTasks = allTasks.sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  );
+
   const startIndex = page * pageSize;
   const endIndex = startIndex + pageSize;
   const tasks = sortedTasks.slice(startIndex, endIndex);
