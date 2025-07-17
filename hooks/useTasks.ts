@@ -110,68 +110,66 @@ export function useTasks() {
         updatedAt: new Date().toISOString(),
       };
 
-      if (optimistic) {
-        // Store original task for rollback
-        const originalTask = tasks.find((task) => task.id === taskId);
-        if (!originalTask) throw new Error("Task not found");
+      const originalTask = tasks.find((task) => task.id === taskId);
+      if (!originalTask) throw new Error("Task not found");
 
-        // Apply optimistic update immediately
+      setTasks((currentTasks) =>
+        currentTasks.map((task) =>
+          task.id === taskId ? { ...task, ...updatedTaskData } : task
+        )
+      );
+
+      try {
+        await updateTask(user.uid, taskId, updatedTaskData);
+        return updatedTaskData;
+      } catch (error) {
+        console.error("Error updating task:", error);
+
         setTasks((currentTasks) =>
-          currentTasks.map((task) =>
-            task.id === taskId ? { ...task, ...updatedTaskData } : task
-          )
+          currentTasks.map((task) => (task.id === taskId ? originalTask : task))
         );
 
-        try {
-          // Attempt to update on server
-          await updateTask(user.uid, taskId, updatedTaskData);
-          return updatedTaskData;
-        } catch (error) {
-          console.error("Error updating task:", error);
-
-          // Rollback optimistic update
-          setTasks((currentTasks) =>
-            currentTasks.map((task) =>
-              task.id === taskId ? originalTask : task
-            )
-          );
-
-          throw error;
-        }
-      } else {
-        // Non-optimistic update (wait for server response first)
-        try {
-          await updateTask(user.uid, taskId, updatedTaskData);
-
-          setTasks((currentTasks) =>
-            currentTasks.map((task) =>
-              task.id === taskId ? { ...task, ...updatedTaskData } : task
-            )
-          );
-
-          return updatedTaskData;
-        } catch (error) {
-          console.error("Error updating task:", error);
-          throw error;
-        }
+        throw error;
       }
     },
     [user, tasks]
   );
 
-  const removeTask = useCallback(async (taskId: string) => {
-    try {
-      await deleteTask(taskId);
+  const removeTask = useCallback(
+    async (taskId: string) => {
+      const originalTask = tasks.find((task) => task.id === taskId);
+      if (!originalTask) {
+        console.error("Task not found for deletion:", taskId);
+        return;
+      }
+
       setTasks((currentTasks) =>
         currentTasks.filter((task) => task.id !== taskId)
       );
-    } catch (error) {
-      console.error("Error deleting task:", error);
-      throw error;
-    }
-  }, []);
+
+      try {
+        await deleteTask(taskId);
+        console.log("Task successfully deleted:", taskId);
+      } catch (error) {
+        console.error("Error deleting task:", error);
+
+        setTasks((currentTasks) => {
+          const taskExists = currentTasks.some((task) => task.id === taskId);
+          if (!taskExists) {
+            return [...currentTasks, originalTask];
+          }
+          return currentTasks;
+        });
+
+        throw error;
+      }
+    },
+    [tasks]
+  );
 
   return {
+    // Store original task for rollback
+
     tasks,
     isLoading,
     isLoadingMore,
