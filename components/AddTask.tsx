@@ -59,7 +59,6 @@ export default function AddTask({
           ...formData,
         };
 
-      console.log("New task data:", newTaskData);
 
       await onTaskAdded(newTaskData);
 
@@ -74,7 +73,7 @@ export default function AddTask({
         startTime: "",
       });
     } catch (error) {
-      console.error("Error adding task:", error);
+      // Send error to an error reporting service
     } finally {
       setIsSubmitting(false);
     }
