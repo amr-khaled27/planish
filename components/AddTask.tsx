@@ -90,7 +90,6 @@ export default function AddTask({
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
             className="fixed inset-0 bg-black bg-opacity-70 z-40"
-            onClick={closeModal}
           ></motion.div>
 
           <motion.div
@@ -104,9 +103,9 @@ export default function AddTask({
               stiffness: 300,
             }}
             className="fixed inset-0 flex items-center justify-center z-50"
-            onClick={(e) => e.stopPropagation()}
+            onClick={closeModal}
           >
-            <div className="relative p-6 bg-[#111827] rounded-lg shadow-xl w-full max-w-md mx-4 border border-gray-700 max-h-[90vh] overflow-y-auto">
+            <div onClick={(e) => e.stopPropagation()} className="relative p-6 bg-[#111827] rounded-lg shadow-xl w-full max-w-md mx-4 border border-gray-700 max-h-[90vh] overflow-y-auto">
               <button
                 onClick={closeModal}
                 className="absolute top-4 right-4 text-gray-400 hover:text-white"

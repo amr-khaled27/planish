@@ -86,7 +86,7 @@ function CalendarNavbar() {
           className="bg-accent/80 text-white px-3 sm:px-4 py-2 rounded-full hover:bg-accent/50 transition-colors flex items-center space-x-2"
         >
           <Plus className="h-4 w-4 sm:h-5 sm:w-5" />
-          <span className="hidden sm:inline">Add Event</span>
+          <span className="hidden sm:inline">Add Tasks</span>
         </button>
       </div>
     </nav>
