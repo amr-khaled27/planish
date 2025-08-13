@@ -77,10 +77,7 @@ export default function CalendarPage() {
           };
 
           if (updatedEvent.start.includes(" ")) {
-            // This is a timed event
             if (taskToUpdate.type === "deadline") {
-              // Deadlines should remain all-day, but if moved to a timed slot,
-              // we can optionally set the dueTime
               const newDueTime =
                 String(newStart.getHours()).padStart(2, "0") +
                 ":" +
@@ -99,9 +96,7 @@ export default function CalendarPage() {
               updates.dueTime = newDueTime;
             }
           } else {
-            // This is an all-day event
             if (taskToUpdate.type === "deadline") {
-              // For deadlines moved as all-day events, clear the dueTime
               updates.dueTime = "";
             }
           }
