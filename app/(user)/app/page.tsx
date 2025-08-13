@@ -9,6 +9,7 @@ import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { TaskCard } from "@/components/TaskCard";
 import { useSearch } from "./layout";
 import { motion, AnimatePresence } from "motion/react";
+import AddTaskComponent from "@/components/AddTaskComponent";
 
 export default function App() {
   const { user, loading } = useAuth();
@@ -81,17 +82,8 @@ export default function App() {
         </h1>
 
         <div className="py-8">
-          <motion.button
-            onClick={onAddTask}
-            className="bg-accent/80 mb-6 text-white px-4 py-2 rounded-full hover:bg-accent/50 transition-colors flex items-center"
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.4, delay: 0.2 }}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <Plus className="w-6 h-6" />
-          </motion.button>
+        <AddTaskComponent style="mb-6" />
+
 
           {isFetchingTasks && (
             <div className="flex justify-center py-10">

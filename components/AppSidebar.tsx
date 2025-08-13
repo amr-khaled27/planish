@@ -26,7 +26,7 @@ export default function AppSidebar() {
             <button
               onClick={() => router.push("/app")}
               className={`hover:text-accent transition-colors cursor-pointer text-left w-full p-2 rounded ${
-                isActive("/app") ? "bg-accent hover:text-white" : ""
+                isActive("/app") ? "bg-accent/80 hover:text-white" : ""
               }`}
             >
               Tasks
@@ -36,7 +36,7 @@ export default function AppSidebar() {
             <button
               onClick={() => router.push("/app/calendar")}
               className={`hover:text-accent transition-colors cursor-pointer text-left w-full p-2 rounded ${
-                isActive("/app/calendar") ? "bg-accent hover:text-white" : ""
+                isActive("/app/calendar") ? "bg-accent/80 hover:text-white" : ""
               }`}
             >
               Calendar
@@ -46,7 +46,7 @@ export default function AppSidebar() {
             <button
               onClick={() => router.push("/app/study")}
               className={`hover:text-accent transition-colors cursor-pointer text-left w-full p-2 rounded ${
-                isActive("/app/study") ? "bg-accent hover:text-white" : ""
+                isActive("/app/study") ? "bg-accent/80 hover:text-white" : ""
               }`}
             >
               Study
@@ -56,7 +56,7 @@ export default function AppSidebar() {
             <button
               onClick={() => router.push("/app/ai")}
               className={`hover:text-accent transition-colors cursor-pointer text-left w-full p-2 rounded ${
-                isActive("/app/ai") ? "bg-accent hover:text-white" : ""
+                isActive("/app/ai") ? "bg-accent/80 hover:text-white" : ""
               }`}
             >
               AI Planner

@@ -18,6 +18,7 @@ import AddTask from "@/components/AddTask";
 import EditTask from "@/components/EditTask";
 import { AnimatePresence, motion } from "motion/react";
 import Task from "@/types/task";
+import AddTaskComponent from "@/components/AddTaskComponent";
 
 interface SearchContextType {
   searchTerm: string;
@@ -81,13 +82,7 @@ function CalendarNavbar() {
           </span>
         </div>
 
-        <button
-          onClick={openAddModal}
-          className="bg-accent/80 text-white px-3 sm:px-4 py-2 rounded-full hover:bg-accent/50 transition-colors flex items-center space-x-2"
-        >
-          <Plus className="h-4 w-4 sm:h-5 sm:w-5" />
-          <span className="hidden sm:inline">Add Tasks</span>
-        </button>
+        <AddTaskComponent />
       </div>
     </nav>
   );
