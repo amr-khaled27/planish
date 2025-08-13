@@ -1,5 +1,8 @@
 import Task from "@/types/task";
 
+const DEFAULT_EVENT_DURATION_HOURS = 1;
+const DEFAULT_TASK_DURATION_HOURS = 2;
+
 export function padMonth(month: number): string {
   return String(month).padStart(2, "0");
 }
@@ -9,7 +12,7 @@ export function formatTimeToAMPM(time24: string): string {
 
   const [hours, minutes] = time24.split(":").map(Number);
   const period = hours >= 12 ? "PM" : "AM";
-  const hours12 = hours % 12 || 12; // Convert 0 to 12 for midnight
+  const hours12 = hours % 12 || 12;
 
   return `${hours12}:${minutes.toString().padStart(2, "0")} ${period}`;
 }
@@ -20,30 +23,103 @@ export interface CalendarEvent {
   start: string;
   end: string;
   description?: string;
-  color: string;
+  calendarId?: string;
+  rrule?: string;
 }
 
-export function getPriorityColor(priority: string): string {
-  switch (priority) {
-    case "urgent":
-      return "#ef4444"; // red
-    case "high":
-      return "#f97316"; // orange
-    case "medium":
-      return "#eab308"; // yellow
-    case "low":
-      return "#22c55e"; // green
-    default:
-      return "#6b7280"; // gray
+function doesEventSpanMidnight(startTime: string, endTime: string): boolean {
+  const [startHour, startMin] = startTime.split(':').map(Number);
+  const [endHour, endMin] = endTime.split(':').map(Number);
+  const startMinutes = startHour * 60 + startMin;
+  const endMinutes = endHour * 60 + endMin;
+  
+  return endMinutes <= startMinutes;
+}
+
+function getNextDayDateString(dateString: string): string {
+  const nextDay = new Date(dateString);
+  nextDay.setDate(nextDay.getDate() + 1);
+  return `${nextDay.getFullYear()}-${String(nextDay.getMonth() + 1).padStart(2, "0")}-${String(nextDay.getDate()).padStart(2, "0")}`;
+}
+
+function addHoursToTime(dateString: string, timeString: string, hours: number): string {
+  const dateTime = new Date(`${dateString}T${timeString}`);
+  dateTime.setHours(dateTime.getHours() + hours);
+  return dateTime.toTimeString().slice(0, 5);
+}
+
+function subtractHoursFromTime(dateString: string, timeString: string, hours: number): string {
+  const dateTime = new Date(`${dateString}T${timeString}`);
+  dateTime.setHours(dateTime.getHours() - hours);
+  return dateTime.toTimeString().slice(0, 5);
+}
+
+function isValidDate(year: number, month: number, day: number): boolean {
+  const testDate = new Date(year, month - 1, day);
+  return (
+    testDate.getFullYear() === year &&
+    testDate.getMonth() === month - 1 &&
+    testDate.getDate() === day
+  );
+}
+
+function getDefaultDateForHabit(): string {
+  const today = new Date();
+  return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+}
+
+function calculateEventTiming(task: Task, safeIsoDate: string): { start: string; end: string } {
+  const isHabit = task.type === "habit";
+  const defaultDuration = isHabit ? DEFAULT_EVENT_DURATION_HOURS : DEFAULT_TASK_DURATION_HOURS;
+
+  if (task.type === "deadline") {
+    return { start: safeIsoDate, end: safeIsoDate };
   }
+
+  if (task.startTime && task.dueTime) {
+    const startDateTime = `${safeIsoDate} ${task.startTime}`;
+    
+    if (doesEventSpanMidnight(task.startTime, task.dueTime)) {
+      const nextDayStr = getNextDayDateString(safeIsoDate);
+      return { 
+        start: startDateTime, 
+        end: `${nextDayStr} ${task.dueTime}` 
+      };
+    } else {
+      return { 
+        start: startDateTime, 
+        end: `${safeIsoDate} ${task.dueTime}` 
+      };
+    }
+  }
+
+  if (task.startTime) {
+    const startDateTime = `${safeIsoDate} ${task.startTime}`;
+    const endTime = addHoursToTime(safeIsoDate, task.startTime, defaultDuration);
+    return { 
+      start: startDateTime, 
+      end: `${safeIsoDate} ${endTime}` 
+    };
+  }
+
+  if (task.dueTime) {
+    const startTime = subtractHoursFromTime(safeIsoDate, task.dueTime, 1);
+    return { 
+      start: `${safeIsoDate} ${startTime}`, 
+      end: `${safeIsoDate} ${task.dueTime}` 
+    };
+  }
+
+  return { start: safeIsoDate, end: safeIsoDate };
 }
 
 export function convertTasksToEvents(tasks: Task[]): CalendarEvent[] {
-  const validTasks = tasks.filter((task) => task.dueDate);
+  const validTasks = tasks.filter((task) => task.dueDate || task.type === "habit");
 
   console.log("Converting tasks to events:", {
     totalTasks: tasks.length,
     validTasks: validTasks.length,
+    habitTasks: tasks.filter(t => t.type === "habit").length,
   });
 
   const uniqueTasks = validTasks.filter(
@@ -51,97 +127,65 @@ export function convertTasksToEvents(tasks: Task[]): CalendarEvent[] {
   );
 
   if (uniqueTasks.length !== validTasks.length) {
-    console.warn(
-      "Removed duplicate tasks:",
-      validTasks.length - uniqueTasks.length
-    );
+    console.warn("Removed duplicate tasks:", validTasks.length - uniqueTasks.length);
   }
 
   const events = uniqueTasks
     .map((task): CalendarEvent | null => {
-      const originalDate = task.dueDate!;
+      try {
+        let originalDate: string;
+        if (task.type === "habit" && !task.dueDate) {
+          originalDate = getDefaultDateForHabit();
+        } else {
+          originalDate = task.dueDate!;
+        }
 
-      const [year, month, day] = originalDate.split("-").map(Number);
+        const [year, month, day] = originalDate.split("-").map(Number);
+        if (!isValidDate(year, month, day)) {
+          console.error(`Invalid date detected: ${originalDate} for task ${task.id}`);
+          return null;
+        }
 
-      const testDate = new Date(year, month - 1, day);
-      const isValidDate =
-        testDate.getFullYear() === year &&
-        testDate.getMonth() === month - 1 &&
-        testDate.getDate() === day;
+        const safeIsoDate = `${String(year)}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
 
-      if (!isValidDate) {
-        console.error(`Invalid date detected: ${originalDate}`);
+        console.log("Processing task:", {
+          id: task.id,
+          title: task.title,
+          originalDate,
+          safeDate: safeIsoDate,
+          type: task.type,
+        });
+
+        const { start, end } = calculateEventTiming(task, safeIsoDate);
+
+        const event: CalendarEvent = {
+          id: task.id,
+          title: task.title,
+          start,
+          end,
+          description: task.description || "",
+          calendarId: task.priority,
+        };
+
+        if (task.type === "habit") {
+          event.rrule = "FREQ=DAILY";
+        }
+
+        console.log("Generated event:", event);
+        return event;
+      } catch (error) {
+        console.error(`Error processing task ${task.id}:`, error);
         return null;
       }
-
-      const safeYear = String(year);
-      const safeMonth = String(month).padStart(2, "0");
-      const safeDay = String(day).padStart(2, "0");
-      const safeIsoDate = `${safeYear}-${safeMonth}-${safeDay}`;
-
-      let startDateTime = safeIsoDate;
-      let endDateTime = safeIsoDate;
-
-      console.log("Processing task:", {
-        id: task.id,
-        title: task.title,
-        originalDate: originalDate,
-        safeDate: safeIsoDate,
-        type: task.type,
-      });
-
-      if (task.type === "deadline") {
-        // All deadline tasks are all-day events
-        startDateTime = safeIsoDate;
-        endDateTime = safeIsoDate;
-      } else {
-        // Handle timed events
-        if (task.startTime && task.dueTime) {
-          startDateTime = `${safeIsoDate} ${task.startTime}`;
-          endDateTime = `${safeIsoDate} ${task.dueTime}`;
-        } else if (task.startTime) {
-          startDateTime = `${safeIsoDate} ${task.startTime}`;
-          const endTime = new Date(`${safeIsoDate}T${task.startTime}`);
-          endTime.setHours(endTime.getHours() + 2);
-          endDateTime = `${safeIsoDate} ${endTime.toTimeString().slice(0, 5)}`;
-        } else if (task.dueTime) {
-          const startTime = new Date(`${safeIsoDate}T${task.dueTime}`);
-          startTime.setHours(startTime.getHours() - 1);
-          startDateTime = `${safeIsoDate} ${startTime
-            .toTimeString()
-            .slice(0, 5)}`;
-          endDateTime = `${safeIsoDate} ${task.dueTime}`;
-        } else {
-          // Default to all-day if no times specified
-          startDateTime = safeIsoDate;
-          endDateTime = safeIsoDate;
-        }
-      }
-
-      const event: CalendarEvent = {
-        id: task.id,
-        title: task.title,
-        start: startDateTime,
-        end: endDateTime,
-        description: task.description || "",
-        color: getPriorityColor(task.priority),
-      };
-
-      console.log("Generated event:", event);
-      return event;
     })
-    .filter((event): event is CalendarEvent => event !== null); // Remove any null events from invalid dates
+    .filter((event): event is CalendarEvent => event !== null);
 
-  // Final duplicate check on events
   const uniqueEvents = events.filter(
     (event, index, self) => index === self.findIndex((e) => e.id === event.id)
   );
 
   if (uniqueEvents.length !== events.length) {
-    console.warn(
-      "Removed duplicate events:",
-      events.length - uniqueEvents.length
-    );
+    console.warn("Removed duplicate events:", events.length - uniqueEvents.length);
   }
 
   console.log("Final unique events:", uniqueEvents);

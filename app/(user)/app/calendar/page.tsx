@@ -6,7 +6,6 @@ import {
   createViewMonthGrid,
   createViewWeek,
 } from "@schedule-x/calendar";
-import { createEventsServicePlugin } from "@schedule-x/events-service";
 import { createDragAndDropPlugin } from "@schedule-x/drag-and-drop";
 import { createResizePlugin } from "@schedule-x/resize";
 import { createCurrentTimePlugin } from "@schedule-x/current-time";
@@ -17,6 +16,7 @@ import { useModal } from "@/context/ModalContext";
 import Task from "@/types/task";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { convertTasksToEvents, padMonth } from "@/utils/calendar";
+import { createEventRecurrencePlugin, createEventsServicePlugin } from "@schedule-x/event-recurrence";
 
 import "@schedule-x/theme-default/dist/index.css";
 
@@ -26,8 +26,8 @@ export default function CalendarPage() {
   const { openEditModal } = useModal();
   const [isReady, setReady] = useState(false);
 
-  // Following the official React documentation pattern
   const [eventsService] = useState(() => createEventsServicePlugin());
+  const [recurrencePlugin] = useState(() => createEventRecurrencePlugin());
 
   const handleEventUpdate = useCallback(
     async (updatedEvent: any) => {
@@ -126,11 +126,65 @@ export default function CalendarPage() {
     })
   );
 
-  // Initialize calendar with empty events array - we'll populate via events service
   const calendar = useCalendarApp({
     views: [createViewDay(), createViewWeek(), createViewMonthGrid()],
-    events: [], // Always start with empty array
+    events: [],
+    calendars: {
+      urgent: {
+        colorName: 'urgent',
+        lightColors: {
+          main: '#ef4444',
+          container: '#fee2e2',
+          onContainer: '#7f1d1d',
+        },
+        darkColors: {
+          main: '#fca5a5',
+          container: '#991b1b',
+          onContainer: '#fef2f2',
+        },
+      },
+      high: {
+        colorName: 'high',
+        lightColors: {
+          main: '#f97316',
+          container: '#fed7aa',
+          onContainer: '#9a3412',
+        },
+        darkColors: {
+          main: '#fdba74',
+          container: '#c2410c',
+          onContainer: '#fff7ed',
+        },
+      },
+      medium: {
+        colorName: 'medium',
+        lightColors: {
+          main: '#eab308',
+          container: '#fef3c7',
+          onContainer: '#92400e',
+        },
+        darkColors: {
+          main: '#fde047',
+          container: '#a16207',
+          onContainer: '#fffbeb',
+        },
+      },
+      low: {
+        colorName: 'low',
+        lightColors: {
+          main: '#22c55e',
+          container: '#dcfce7',
+          onContainer: '#166534',
+        },
+        darkColors: {
+          main: '#4ade80',
+          container: '#15803d',
+          onContainer: '#f0fdf4',
+        },
+      },
+    },
     plugins: [
+      recurrencePlugin,
       eventsService,
       dragAndDropPlugin,
       resizePlugin,
@@ -178,7 +232,7 @@ export default function CalendarPage() {
       <div className="mb-4">
         <h1 className="text-3xl font-bold text-white">Calendar</h1>
         <p className="text-sm text-muted-foreground mt-2">
-          Showing {tasks.filter((t) => t.dueDate).length} scheduled tasks.
+          Showing {tasks.filter((t) => t.dueDate || t.type === "habit").length} scheduled tasks.
         </p>
       </div>
 

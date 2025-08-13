@@ -75,7 +75,7 @@ export function TaskScheduling({
         </>
       )}
 
-      {taskType === "task" && (
+      {(taskType === "task" || taskType === "subtask" || taskType === "habit") && (
         <>
           <div className="grid grid-cols-2 gap-3 mb-4">
             <div>
@@ -111,6 +111,7 @@ export function TaskScheduling({
               />
             </div>
           </div>
+          {taskType !== "habit" && (
           <div className="mb-4">
             <label
               htmlFor="dueDate"
@@ -130,6 +131,7 @@ export function TaskScheduling({
               When do you plan to work on this?
             </small>
           </div>
+          )}
         </>
       )}
 

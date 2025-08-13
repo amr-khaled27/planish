@@ -43,6 +43,7 @@ export default function AddTask({
     >
   ) => {
     const { name, value } = e.target;
+    console.log("Form data changed:", { name, value });
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 

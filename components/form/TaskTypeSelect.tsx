@@ -22,7 +22,8 @@ export function TaskTypeSelect({ value, onChange }: TaskTypeSelectProps) {
         <option value="task">Task</option>
         <option value="deadline">Deadline</option>
         <option value="project">Project</option>
-        <option value="assignment">Assignment</option> {/* fixed typo */}
+        <option value="assignment">Assignment</option>
+        <option value="habit">Habit</option>
       </select>
       <small className="text-xs text-gray-500 mt-1">
         Pick the task category that best fits your work

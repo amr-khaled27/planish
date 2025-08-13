@@ -94,7 +94,6 @@ select {
     }
   }
 
-  /* Custom Schedule-X Dark Theme Overrides */
   .calendar-container .sx__calendar-wrapper {
     background-color: transparent;
     border-radius: 0.5rem;
@@ -105,44 +104,39 @@ select {
     border: 1px solid hsl(var(--border) / 0.3);
   }
 
-  /* Improve calendar header styling in dark mode */
   .calendar-container .is-dark .sx__calendar-header {
     background-color: hsl(var(--background));
     border-bottom: 1px solid hsl(var(--border) / 0.3);
   }
 
-  /* Enhance calendar grid styling */
   .calendar-container .is-dark .sx__week-grid,
   .calendar-container .is-dark .sx__month-grid {
     background-color: hsl(var(--secondary) / 0.8);
   }
 
-  /* Improve text readability in dark mode */
   .calendar-container .is-dark {
     --sx-internal-color-text: hsl(var(--foreground));
     --sx-color-on-surface: hsl(var(--foreground));
+    --sx-color-primary: #22c55e; 
+    --sx-color-on-primary: #ffffff;
   }
 
-  /* Custom event colors for better contrast in dark mode */
   .calendar-container .is-dark .sx__event {
     border-width: 1px;
     border-style: solid;
   }
 
-  /* Enhance time grid appearance */
   .calendar-container .is-dark .sx__time-grid__time {
     color: hsl(var(--muted-foreground));
     border-color: hsl(var(--border) / 0.3);
   }
 
-  /* Improve today highlighting */
   .calendar-container .is-dark .sx__week-grid__day--is-today,
   .calendar-container .is-dark .sx__month-grid__day--is-today {
     background-color: hsl(var(--accent) / 0.1);
     border-color: hsl(var(--accent) / 0.3);
   }
 
-  /* Custom scrollbar for calendar in dark mode */
   .calendar-container .is-dark ::-webkit-scrollbar {
     width: 8px;
   }
