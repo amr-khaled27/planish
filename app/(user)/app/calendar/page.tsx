@@ -17,6 +17,8 @@ import Task from "@/types/task";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { convertTasksToEvents, padMonth } from "@/utils/calendar";
 import { createEventRecurrencePlugin, createEventsServicePlugin } from "@schedule-x/event-recurrence";
+import { EventTooltip } from "@/components/calendar/EventTooltip";
+import { useEventTooltip } from "@/hooks/useEventTooltip";
 
 import "@schedule-x/theme-default/dist/index.css";
 
@@ -28,6 +30,8 @@ export default function CalendarPage() {
 
   const [eventsService] = useState(() => createEventsServicePlugin());
   const [recurrencePlugin] = useState(() => createEventRecurrencePlugin());
+
+  const { hoverState, initializeTooltips } = useEventTooltip(tasks);
 
   const handleEventUpdate = useCallback(
     async (updatedEvent: any) => {
@@ -215,13 +219,27 @@ export default function CalendarPage() {
       });
 
       eventsService.set(events);
+      
+      setTimeout(() => {
+        initializeTooltips();
+      }, 200);
     }
-  }, [tasks, eventsService, isReady]);
+  }, [tasks, eventsService, isReady, initializeTooltips]);
   useEffect(() => {
     return () => {
       eventsService.set([]);
     };
   }, [eventsService]);
+
+  useEffect(() => {
+    if (isReady) {
+      const timeoutId = setTimeout(() => {
+        initializeTooltips();
+      }, 300);
+      
+      return () => clearTimeout(timeoutId);
+    }
+  }, [isReady, initializeTooltips]);
 
   if (loading || isLoading || !isReady) {
     return <LoadingSpinner />;
@@ -244,6 +262,15 @@ export default function CalendarPage() {
           <ScheduleXCalendar calendarApp={calendar} />
         </div>
       </div>
+
+      {hoverState.visible && hoverState.task && hoverState.event && (
+        <EventTooltip
+          event={hoverState.event}
+          task={hoverState.task}
+          position={hoverState.position}
+          visible={hoverState.visible}
+        />
+      )}
     </div>
   );
 }
