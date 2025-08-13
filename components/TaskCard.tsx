@@ -53,6 +53,7 @@ export function TaskCard({
     >
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-3">
+          {task.type !== "habit" && (
             <button
               onClick={handleToggleDone}
               className={`min-w-[1.5rem] min-h-[1.5rem] rounded border-2 flex items-center justify-center transition-colors ${
@@ -63,7 +64,7 @@ export function TaskCard({
               aria-label={isDone ? "Mark as not done" : "Mark as done"}
             >
               {isDone && <Check size={14} />}
-            </button>
+            </button>)}
           <h2
             className={`font-semibold text-lg ${
               isDone ? "line-through text-gray-500" : ""
