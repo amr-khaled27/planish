@@ -78,6 +78,15 @@ select {
   }
 }
 
+html {
+  overflow: scroll;
+  overflow-x: hidden;
+}
+::-webkit-scrollbar {
+  width: 0;
+  background: transparent;
+}
+
 @layer utilities {
   .fade-in {
     animation: fadeIn 0.6s ease-in-out;
@@ -117,7 +126,7 @@ select {
   .calendar-container .is-dark {
     --sx-internal-color-text: hsl(var(--foreground));
     --sx-color-on-surface: hsl(var(--foreground));
-    --sx-color-primary: #22c55e; 
+    --sx-color-primary: #22c55e;
     --sx-color-on-primary: #ffffff;
   }
 
